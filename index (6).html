@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Healthy U Fitness Studio – Free Trial Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --fire: #FF4D1C;
+    --gold: #FFB700;
+    --cream: #FFF5E6;
+    --dark: #0D0D0D;
+    --mid: #1A1A1A;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,77,28,0.3);
+    --glow: rgba(255,77,28,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── ANIMATED BACKGROUND ── */
+  .bg-canvas {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    overflow: hidden;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #FF4D1C, transparent); top: -100px; left: -100px; animation-delay: 0s; }
+  .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #FFB700, transparent); bottom: -80px; right: -80px; animation-delay: -4s; }
+  .orb-3 { width: 300px; height: 300px; background: radial-gradient(circle, #FF4D1C88, transparent); top: 40%; left: 60%; animation-delay: -8s; }
+
+  @keyframes drift {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(40px, 30px) scale(1.1); }
+  }
+
+  .grid-lines {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,77,28,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,77,28,0.06) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+  }
+  @keyframes gridMove {
+    0%   { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--fire);
+    opacity: 0;
+    animation: floatUp 8s ease-in infinite;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 0.8; }
+    90%  { opacity: 0.3; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+  }
+
+  /* ── PAGE LAYOUT ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+    animation: fadeDown 0.8s ease both;
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── LOGO RING WITH VIDEO ── */
+  .logo-ring {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    border: 3px solid var(--fire);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px var(--glow), inset 0 0 20px var(--glow);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 30px var(--glow), 0 0 0 4px rgba(255,77,28,0.15); }
+    50%       { box-shadow: 0 0 55px rgba(255,77,28,0.5), 0 0 0 7px rgba(255,77,28,0.1); }
+  }
+  .logo-ring::before {
+    content: '';
+    position: absolute; inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,183,0,0.4);
+    animation: spin 8s linear infinite;
+    z-index: 10;
+    pointer-events: none;
+  }
+  .logo-ring::after {
+    content: '';
+    position: absolute; inset: -14px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255,77,28,0.2);
+    animation: spin 16s linear infinite reverse;
+    z-index: 10;
+    pointer-events: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .logo-video {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    z-index: 1;
+  }
+  /* Fallback emoji — shown if video fails */
+  .logo-emoji {
+    font-size: 38px;
+    position: absolute; z-index: 2;
+    transition: opacity 0.4s ease;
+  }
+
+  .studio-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(26px, 7vw, 42px);
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--fire), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+  .studio-tag {
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,245,230,0.5);
+    margin-top: 4px;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, rgba(255,77,28,0.2), rgba(255,183,0,0.1));
+    border: 1px solid rgba(255,77,28,0.4);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gold);
+    margin-top: 12px;
+    letter-spacing: 1px;
+  }
+  .badge-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: blink 1.5s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+  /* ── CARD ── */
+  .form-card {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,77,28,0.2);
+    border-radius: 24px;
+    padding: 32px 28px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+  .card-sub {
+    font-size: 13px;
+    color: rgba(255,245,230,0.45);
+    margin-bottom: 28px;
+  }
+
+  /* ── FORM FIELDS ── */
+  .field-group {
+    display: flex; flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .field { position: relative; }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,245,230,0.5);
+    margin-bottom: 8px;
+  }
+
+  .field-inner {
+    position: relative;
+    display: flex; align-items: center;
+  }
+
+  .field-icon {
+    position: absolute; left: 14px;
+    font-size: 16px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.7;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,245,230,0.1);
+    border-radius: 12px;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 14px 14px 14px 44px;
+    outline: none;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+  }
+  .field textarea {
+    resize: none;
+    height: 90px;
+    padding-top: 14px;
+  }
+  .field select { cursor: pointer; }
+  .field select option { background: #1a1a1a; color: var(--cream); }
+
+  .field input::placeholder,
+  .field textarea::placeholder { color: rgba(255,245,230,0.25); }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--fire);
+    background: rgba(255,77,28,0.06);
+    box-shadow: 0 0 0 3px rgba(255,77,28,0.12), 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  /* ── TIME SELECTOR ── */
+  .time-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .time-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,245,230,0.1);
+    border-radius: 12px;
+    color: rgba(255,245,230,0.6);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 12px 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+  .time-btn:hover { border-color: var(--fire); color: var(--fire); background: rgba(255,77,28,0.08); }
+  .time-btn.active {
+    background: linear-gradient(135deg, var(--fire), #FF7A40);
+    border-color: var(--fire);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(255,77,28,0.35);
+  }
+  .time-emoji { display: block; font-size: 18px; margin-bottom: 4px; }
+
+  /* ── GOAL TAGS ── */
+  .goal-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+  .goal-tag {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,245,230,0.1);
+    border-radius: 100px;
+    color: rgba(255,245,230,0.6);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .goal-tag:hover { border-color: var(--gold); color: var(--gold); }
+  .goal-tag.active {
+    background: rgba(255,183,0,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  /* ── SUBMIT BUTTON ── */
+  .btn-submit {
+    width: 100%;
+    background: linear-gradient(135deg, var(--fire) 0%, #FF7A40 50%, var(--gold) 100%);
+    background-size: 200% auto;
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(255,77,28,0.4);
+  }
+  .btn-submit::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  .btn-submit:hover { background-position: right center; box-shadow: 0 12px 40px rgba(255,77,28,0.6); transform: translateY(-2px); }
+  .btn-submit:hover::before { transform: translateX(100%); }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* ── CONSENT ── */
+  .consent {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 20px;
+  }
+  .consent input[type=checkbox] {
+    width: 18px; height: 18px;
+    accent-color: var(--fire);
+    margin-top: 2px; flex-shrink: 0;
+    cursor: pointer;
+  }
+  .consent p { font-size: 12px; color: rgba(255,245,230,0.4); line-height: 1.6; }
+  .consent a { color: var(--fire); text-decoration: none; }
+
+  /* ── SOCIAL STRIP ── */
+  .social-strip {
+    width: 100%;
+    max-width: 480px;
+    margin-top: 20px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,245,230,0.06);
+    border-radius: 20px;
+    padding: 20px 24px;
+    animation: fadeUp 0.9s 0.4s ease both;
+  }
+  .social-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,245,230,0.3);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .social-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .social-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 18px;
+    border-radius: 100px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+  }
+  .social-btn.insta {
+    background: linear-gradient(135deg, rgba(225,48,108,0.15), rgba(253,29,29,0.1), rgba(245,96,64,0.1));
+    border-color: rgba(225,48,108,0.3);
+    color: #f09433;
+  }
+  .social-btn.insta:hover { background: linear-gradient(135deg, rgba(225,48,108,0.3), rgba(253,29,29,0.2)); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(225,48,108,0.2); }
+  .social-btn.whatsapp { background: rgba(37,211,102,0.1); border-color: rgba(37,211,102,0.3); color: #25D366; }
+  .social-btn.whatsapp:hover { background: rgba(37,211,102,0.2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,211,102,0.2); }
+  .social-btn.phone { background: rgba(255,77,28,0.1); border-color: rgba(255,77,28,0.3); color: var(--fire); }
+  .social-btn.phone:hover { background: rgba(255,77,28,0.2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,77,28,0.2); }
+  .social-icon { font-size: 18px; }
+
+  /* ── BENEFITS BAR ── */
+  .benefits-bar {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+  .benefit-pill {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,245,230,0.07);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .benefit-pill .b-icon { font-size: 22px; margin-bottom: 4px; }
+  .benefit-pill .b-text { font-size: 10px; color: rgba(255,245,230,0.4); letter-spacing: 0.5px; line-height: 1.4; }
+
+  /* ── SUCCESS STATE ── */
+  .success-msg {
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+    animation: fadeUp 0.5s ease both;
+  }
+  .success-msg .s-icon { font-size: 60px; margin-bottom: 12px; }
+  .success-msg h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--fire), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .success-msg p { font-size: 14px; color: rgba(255,245,230,0.5); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 11px;
+    color: rgba(255,245,230,0.2);
+    letter-spacing: 1px;
+    animation: fadeUp 0.9s 0.6s ease both;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 400px) {
+    .form-card { padding: 24px 18px; }
+    .time-grid { grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .time-btn { font-size: 12px; padding: 10px 4px; }
+    .benefits-bar { gap: 8px; }
+    .benefit-pill { padding: 12px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg-canvas">
+  <div class="grid-lines"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-ring">
+      <!-- ✅ logo.jpg naam se GitHub mein rakhein — same folder mein index.html ke saath -->
+      <img src="logo.png" alt="Healthy U Fitness Studio"
+           style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;position:absolute;inset:0;z-index:1;"
+           onerror="this.style.display='none';document.getElementById('logo-emoji').style.display='block';"/>
+      <span class="logo-emoji" id="logo-emoji" style="display:none;">💪</span>
+    </div>
+
+    <div class="studio-name">Healthy U<br>Fitness Studio</div>
+    <div class="studio-tag">Ladies Only · Hyderabad</div>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Free Trial – Limited Slots!
+    </div>
+  </div>
+
+  <!-- BENEFITS -->
+  <div class="benefits-bar">
+    <div class="benefit-pill">
+      <div class="b-icon">🔥</div>
+      <div class="b-text">Expert Trainers</div>
+    </div>
+    <div class="benefit-pill">
+      <div class="b-icon">🧘‍♀️</div>
+      <div class="b-text">Yoga & Zumba</div>
+    </div>
+    <div class="benefit-pill">
+      <div class="b-icon">🏆</div>
+      <div class="b-text">Results Guaranteed</div>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <div id="form-body">
+      <div class="card-title">Book Your Free Trial</div>
+      <div class="card-sub">Fill in your details — we'll confirm via WhatsApp ✅</div>
+
+      <div class="field-group">
+        <!-- Name -->
+        <div class="field">
+          <label>Full Name</label>
+          <div class="field-inner">
+            <span class="field-icon">👤</span>
+            <input type="text" id="name" placeholder="Aapka naam yahan likhein" autocomplete="name"/>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="field">
+          <label>WhatsApp Number</label>
+          <div class="field-inner">
+            <span class="field-icon">📱</span>
+            <input type="tel" id="phone" placeholder="+91 00000 00000" autocomplete="tel"/>
+          </div>
+        </div>
+
+        <!-- Age -->
+        <div class="field">
+          <label>Age</label>
+          <div class="field-inner">
+            <span class="field-icon">🎂</span>
+            <select id="age">
+              <option value="" disabled selected>Select your age group</option>
+              <option>15 – 20 years</option>
+              <option>21 – 30 years</option>
+              <option>31 – 40 years</option>
+              <option>41 – 50 years</option>
+              <option>50+ years</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Area -->
+        <div class="field">
+          <label>Your Area / Locality</label>
+          <div class="field-inner">
+            <span class="field-icon">📍</span>
+            <input type="text" id="area" placeholder="e.g. Kukatpally, Miyapur..."/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Slot -->
+      <div class="field" style="margin-bottom:22px;">
+        <label>Preferred Time Slot</label>
+        <div class="time-grid">
+          <button type="button" class="time-btn" onclick="selectTime(this,'Morning')">
+            <span class="time-emoji">🌅</span>Morning<br><small style="font-size:10px;opacity:.6;">6am – 10am</small>
+          </button>
+          <button type="button" class="time-btn" onclick="selectTime(this,'Afternoon')">
+            <span class="time-emoji">☀️</span>Afternoon<br><small style="font-size:10px;opacity:.6;">10am – 2pm</small>
+          </button>
+          <button type="button" class="time-btn" onclick="selectTime(this,'Evening')">
+            <span class="time-emoji">🌆</span>Evening<br><small style="font-size:10px;opacity:.6;">4pm – 8pm</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- Fitness Goal -->
+      <div class="field" style="margin-bottom:22px;">
+        <label>Your Fitness Goal (select all that apply)</label>
+        <div class="goal-wrap">
+          <button type="button" class="goal-tag" onclick="toggleGoal(this)">🔥 Weight Loss</button>
+          <button type="button" class="goal-tag" onclick="toggleGoal(this)">💪 Muscle Tone</button>
+          <button type="button" class="goal-tag" onclick="toggleGoal(this)">🧘 Flexibility</button>
+          <button type="button" class="goal-tag" onclick="toggleGoal(this)">💃 Zumba</button>
+          <button type="button" class="goal-tag" onclick="toggleGoal(this)">🏃 Cardio</button>
+          <button type="button" class="goal-tag" onclick="toggleGoal(this)">🌿 General Health</button>
+        </div>
+      </div>
+
+      <!-- How did you hear -->
+      <div class="field" style="margin-bottom:22px;">
+        <label>How did you hear about us?</label>
+        <div class="field-inner">
+          <span class="field-icon">💬</span>
+          <select id="source">
+            <option value="" disabled selected>Select an option</option>
+            <option>Instagram</option>
+            <option>WhatsApp / Friend</option>
+            <option>Google Search</option>
+            <option>Walking Past the Studio</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Consent -->
+      <div class="consent">
+        <input type="checkbox" id="consent" checked/>
+        <p>I agree to be contacted by <strong style="color:var(--cream);">Healthy U Fitness Studio</strong> via WhatsApp for trial confirmation. My details will not be shared elsewhere.</p>
+      </div>
+
+      <!-- Submit -->
+      <button class="btn-submit" onclick="submitForm()">⚡ BOOK MY FREE TRIAL</button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-msg" id="success-msg">
+      <div class="s-icon">🎉</div>
+      <h3>You're All Set!</h3>
+      <p>Thank you! We'll confirm your free trial slot on <strong style="color:var(--gold);">WhatsApp</strong> within 24 hours.<br/><br/>Get ready to transform! 💪🔥</p>
+      <br/>
+      <a href="https://wa.me/917032616130" target="_blank" class="social-btn whatsapp" style="display:inline-flex;margin:0 auto;">
+        <span class="social-icon">💬</span> Message Us on WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- SOCIAL STRIP -->
+  <div class="social-strip">
+    <div class="social-label">Connect With Us</div>
+    <div class="social-links">
+      <a href="https://www.instagram.com/healthyufitnessstudio?igsh=MXRlMXM3NTk1ZzQ3Yw==" target="_blank" class="social-btn insta">
+        <span class="social-icon">📸</span> Instagram
+      </a>
+      <a href="https://wa.me/917032616130" target="_blank" class="social-btn whatsapp">
+        <span class="social-icon">💬</span> WhatsApp
+      </a>
+      <a href="tel:+917032616130" class="social-btn phone">
+        <span class="social-icon">📞</span> 70326 16130
+      </a>
+    </div>
+  </div>
+
+  <div class="footer">© 2025 Healthy U Fitness Studio · Ladies Only · Hyderabad</div>
+</div>
+
+<script>
+  // ── PARTICLES ──
+  (function(){
+    const canvas = document.querySelector('.bg-canvas');
+    for(let i = 0; i < 18; i++){
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDelay = (Math.random() * 8) + 's';
+      p.style.animationDuration = (6 + Math.random() * 6) + 's';
+      p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+      canvas.appendChild(p);
+    }
+  })();
+
+  // ── TIME SELECTION ──
+  let selectedTime = '';
+  function selectTime(btn, val){
+    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedTime = val;
+  }
+
+  // ── GOAL TOGGLE ──
+  function toggleGoal(btn){
+    btn.classList.toggle('active');
+  }
+
+  // ── FORM SUBMIT → WHATSAPP ──
+  function submitForm(){
+    const name    = document.getElementById('name').value.trim();
+    const phone   = document.getElementById('phone').value.trim();
+    const consent = document.getElementById('consent').checked;
+
+    if(!name)   { shake('name');  alert('Please enter your name 😊'); return; }
+    if(!phone)  { shake('phone'); alert('Please enter your WhatsApp number 📱'); return; }
+    if(!selectedTime)   { alert('Please select a preferred time slot ⏰'); return; }
+    if(!consent)        { alert('Please agree to be contacted via WhatsApp.'); return; }
+
+    const goals = [...document.querySelectorAll('.goal-tag.active')]
+                    .map(g => g.textContent.trim()).join(', ') || 'Not specified';
+    const age   = document.getElementById('age').value   || 'Not specified';
+    const area  = document.getElementById('area').value.trim() || 'Not specified';
+    const src   = document.getElementById('source').value || 'Not specified';
+
+    const msg = encodeURIComponent(
+      `🏋️ *New Trial Booking – Healthy U Fitness Studio*\n\n` +
+      `👤 Name: ${name}\n` +
+      `📱 Phone: ${phone}\n` +
+      `🎂 Age: ${age}\n` +
+      `📍 Area: ${area}\n` +
+      `⏰ Time: ${selectedTime}\n` +
+      `🎯 Goals: ${goals}\n` +
+      `💬 Source: ${src}\n\n` +
+      `I'd like to book my *FREE TRIAL SESSION* please! 🙏`
+    );
+
+    window.open(`https://wa.me/917032616130?text=${msg}`, '_blank');
+
+    document.getElementById('form-body').style.display = 'none';
+    document.getElementById('success-msg').style.display = 'block';
+  }
+
+  // ── SHAKE ANIMATION ──
+  function shake(id){
+    const el = document.getElementById(id);
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = 'shakeInput 0.4s ease';
+  }
+
+  const s = document.createElement('style');
+  s.textContent = `@keyframes shakeInput {
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-6px)}
+    40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)}
+    80%{transform:translateX(4px)}
+  }`;
+  document.head.appendChild(s);
+</script>
+</body>
+</html>
